@@ -1,0 +1,3 @@
+C:\Users\user\Desktop\Cloud\3-Work\vfilename-历史文件\vfilename\vfilename\vfilename\bin\Debug\vfilename.exe.config
+C:\Users\user\Desktop\Cloud\3-Work\vfilename-历史文件\vfilename\vfilename\vfilename\obj\Debug\vfilename.exe
+C:\Users\user\Desktop\Cloud\3-Work\vfilename-历史文件\vfilename\vfilename\vfilename\obj\Debug\vfilename.pdb
