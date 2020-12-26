@@ -29,7 +29,6 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
 
-
     </Window.Resources>
 
     <Grid>
@@ -44,25 +43,25 @@
          FontSize="25" TextChanged="FilterTextBox_TextChanged" GotFocus="FilterTextBox_GotFocus">
             过滤的关键词
         </TextBox>
-        <ListView Grid.Column="0" Grid.Row="1" Margin="0" Name="lv" FontFamily="微软雅黑" FontSize="21" MouseDoubleClick="lv_MouseDoubleClick">
+        <ListView Grid.Column="0" Grid.Row="1" Margin="0" Name="lv" FontFamily="微软雅黑" FontSize="21" SelectionMode="Single">
+
             <ListView.ItemContainerStyle>
-                
-                
-                
                 <Style TargetType="{x:Type ListViewItem}">
+
+                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick" />
 
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListViewItem}">
                                 <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
-                    BorderThickness="{TemplateBinding BorderThickness}" 
-                    Background="{TemplateBinding Background}" 
-                    Padding="{TemplateBinding Padding}"
-                    SnapsToDevicePixels="true">
+                                    BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}" 
+                                    Padding="{TemplateBinding Padding}"
+                                    SnapsToDevicePixels="true">
                                     <GridViewRowPresenter 
-                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                 </Border>
                             </ControlTemplate>
                         </Setter.Value>
@@ -91,7 +90,9 @@
                     </Style.Triggers>
 
                 </Style>
+                
             </ListView.ItemContainerStyle>
+            
             <ListView.View>
                 <GridView x:Name="lvGridView">
                     <GridViewColumn Header="项目名" x:Name="col1" Width="{Binding ElementName=helperField1, Path=ActualWidth}">
@@ -124,21 +125,18 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
+            
         </ListView>
 
         <Grid  Grid.Column="0" Grid.Row="1" Name="hiddenGrid" Visibility="Hidden">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0"/>
-                    <!--Width is bound to width of the first GridViewColumn -->
                 <ColumnDefinition Width="2*"/>
-                <!--Width is set to "Fill"-->
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="2*"/>
-
-                <!--Correction Width-->
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
-            <!--This is the hidden helper Field which is used to bind to, using the "Fill" column of the helper grid-->
+
             <Grid Grid.Column="1" x:Name="helperField1"/>
             <Grid Grid.Column="2" x:Name="helperField2"/>
             <Grid Grid.Column="3" x:Name="helperField3"/>

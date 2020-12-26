@@ -65,11 +65,8 @@ namespace vfilename
         static IntPtr FoundComboHwnd = (IntPtr)0;
         static IntPtr FoundButtonHwnd = (IntPtr)0;
 
-        
-
         public static bool EnumChildWindowsCallback(IntPtr hWnd, IntPtr lParam)
         {
-            
             StringBuilder className = new StringBuilder(256);
             GetClassName(hWnd, className, className.Capacity);
             if(className.ToString()== "ComboBox")
@@ -93,10 +90,6 @@ namespace vfilename
             
             return true;
         }
-
-        
-
-        
 
         public static void Go(String s)
         {
@@ -138,15 +131,12 @@ namespace vfilename
 
         public static string GetControlText(IntPtr hWnd)
         {
-
-            // Get the size of the string required to hold the window title (including trailing null.) 
             Int32 titleSize = SendMessage((int)hWnd, WM_GETTEXTLENGTH, 0, 0).ToInt32();
 
-            // If titleSize is 0, there is no title so return an empty string (or null)
             if (titleSize == 0)
                 return String.Empty;
 
-            StringBuilder title = new StringBuilder((titleSize + 1)*3); // new StringBuilder(titleSize + 1);
+            StringBuilder title = new StringBuilder((titleSize + 1)*3);
 
             SendMessage(hWnd, (int)WM_GETTEXT, title.Capacity, title);
 

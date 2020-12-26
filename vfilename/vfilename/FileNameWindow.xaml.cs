@@ -15,8 +15,6 @@ using System.Windows.Shapes;
 namespace vfilename
 {
 
-
-
     /// <summary>
     /// FileNameWindow.xaml 的交互逻辑
     /// </summary>
@@ -31,8 +29,8 @@ namespace vfilename
 
             base.OnClosing(e);
 
-                e.Cancel = true;
-                this.Hide();
+            e.Cancel = true;
+            this.Hide();
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -92,6 +90,5 @@ namespace vfilename
             }
         }
     }
-
 
 }

@@ -4,11 +4,11 @@
 winexe
 C#
 .cs
-C:\Users\user\Desktop\Cloud\3-Work\vfilename\vfilename\obj\Release\
+C:\Users\user\Desktop\Cloud\3-Work\vfilename\vfilename\obj\Debug\
 vfilename
 none
 false
-TRACE
+DEBUG;TRACE
 C:\Users\user\Desktop\Cloud\3-Work\vfilename\vfilename\App.xaml
 3910543843
 

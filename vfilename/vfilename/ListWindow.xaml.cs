@@ -86,7 +86,7 @@ namespace vfilename
             lvItems = new List<ListItem>();
             foreach (ListItem li in allItems)
             {
-                if (li.FilePath.IndexOf(s) != -1)
+                if (li.FilePath.ToLower().IndexOf(s.ToLower()) != -1)
                 {
                     lvItems.Add(new ListItem() { ProjectName = li.ProjectName, UserName = li.UserName, DateTime = li.DateTime, Descrption = li.Descrption, FilePath = li.FilePath });
                 }
@@ -100,9 +100,10 @@ namespace vfilename
             {
                 ((TextBox)sender).Text = "";
             }
+            lv.UnselectAll();
         }
 
-        private void lv_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Topmost = false;
             string RarExe = ConfigTxt.Read("rarexe", "");
@@ -149,11 +150,11 @@ namespace vfilename
     {
         public int Compare(string s1, string s2)
         {
-            Match m1 = Regex.Match(s1, @"^.*\\(.*)-(.*)-(\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d)-(.*)\.rar$", RegexOptions.IgnoreCase);
-            Match m2 = Regex.Match(s2, @"^.*\\(.*)-(.*)-(\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d)-(.*)\.rar$", RegexOptions.IgnoreCase);
+            Match m1 = Regex.Match(s1, @"^.*\\(.*)-([^-]*)-(\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d)-(.*)\.rar$", RegexOptions.IgnoreCase);
+            Match m2 = Regex.Match(s2, @"^.*\\(.*)-([^-]*)-(\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d)-(.*)\.rar$", RegexOptions.IgnoreCase);
             string t1 = m1.Groups[3].Value;
             string t2 = m2.Groups[3].Value;
-
+            //MessageBox.Show(t1+" ... "+t2);
             return String.Compare(t1, t2);
         }
     }
