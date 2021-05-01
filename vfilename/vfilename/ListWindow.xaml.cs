@@ -51,19 +51,19 @@ namespace vfilename
         public void InitList(string Folder)
         {
             allItems = new List<ListItem>();
-            IEnumerable<string> files = GetFiles(Folder, "*.rar", @"^.*\\.*-[^-]*-\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d-.*\.rar$", SearchOption.AllDirectories)
+            IEnumerable<string> files = GetFiles(Folder, "*.*", RegexStrClass.RegexStr, SearchOption.AllDirectories)
                 .OrderByDescending(x => x, new SpecialComparer());
             
             foreach(string f in files)
             {
-                Match m = Regex.Match(f, @"^.*\\(.*)-([^-]*)-(\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d)-(.*)\.rar$", RegexOptions.IgnoreCase);
-                /*string tmp = "";
-                for (int i = 0; i < m.Groups.Count; i++)
-                {
-                    tmp += i.ToString() + " = " + m.Groups[i] + "\r\n";
-                }
-                MessageBox.Show(tmp);*/
-                allItems.Add(new ListItem() { ProjectName = m.Groups[1].Value, UserName = m.Groups[2].Value, DateTime = m.Groups[3].Value, Descrption = m.Groups[4].Value, FilePath = f});
+                Match m = Regex.Match(f, RegexStrClass.RegexStr, RegexOptions.IgnoreCase);
+                //string tmp = "InitList / RegexMatch\r\n";
+                //for (int i = 0; i < m.Groups.Count; i++)
+                //{
+                //    tmp += i.ToString() + " = " + m.Groups[i].Value + "\r\n";
+                //}
+                //MessageBox.Show(tmp);
+                allItems.Add(new ListItem() { ProjectName = m.Groups[1].Value, UserName = m.Groups[2].Value, DateTime = m.Groups[3].Value, Descrption = m.Groups[4].Value, FilePath = f });
             }
             lvItems = allItems;
             lv.ItemsSource = lvItems;
@@ -106,26 +106,42 @@ namespace vfilename
         private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Topmost = false;
-            string RarExe = ConfigTxt.Read("rarexe", "");
-            if (RarExe == "")
-            {
-                MessageBox.Show("WinRAR程序位置没有定义。");
-                return;
-            }
             //MessageBox.Show(lvItems[lv.SelectedIndex].FilePath);
-            string RarFile = lvItems[lv.SelectedIndex].FilePath;
-            string RarFileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(RarFile);
-            string RarFolder = System.IO.Path.GetDirectoryName(RarFile);
+            string ClickedFile = lvItems[lv.SelectedIndex].FilePath;
+            string ClickedFileExtension = System.IO.Path.GetExtension(ClickedFile).Replace(".", "").ToUpper();
+            string ClickedFileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(ClickedFile);
+            string ClickedFileFolder = System.IO.Path.GetDirectoryName(ClickedFile);
             string ExtractFolder = System.IO.Path.Combine(
-                RarFolder, 
-                "VFILENAME-RAR-"+RarFileNameWithoutExtension + "-" + DateTime.Now.ToString("yyyy.MM.dd@HH.mm.ss")
+                ClickedFileFolder, 
+                "VFILENAME-"+ClickedFileExtension+"-"+ClickedFileNameWithoutExtension + "-" + DateTime.Now.ToString("yyyy.MM.dd@HH.mm.ss")
                 );
 
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = RarExe;
-            startInfo.Arguments = "x \"" + RarFile + "\" \"" + ExtractFolder + "\\\"";
-            //MessageBox.Show(startInfo.Arguments);
+            if (ClickedFileExtension == "RAR")
+            {
+                string RarExe = ConfigTxt.Read("rarexe", "");
+                if (RarExe == "")
+                {
+                    MessageBox.Show("WinRAR程序位置没有定义。");
+                    return;
+                }
+                startInfo.FileName = RarExe;
+                startInfo.Arguments = "x \"" + ClickedFile + "\" \"" + ExtractFolder + "\\\"";
+                //MessageBox.Show(startInfo.Arguments);
+            }
+            if (ClickedFileExtension == "7Z")
+            {
+                string SevenZipExe = ConfigTxt.Read("7zexe", "");
+                if (SevenZipExe == "")
+                {
+                    MessageBox.Show("7-Zip程序位置没有定义。");
+                    return;
+                }
+                startInfo.FileName = SevenZipExe;
+                startInfo.Arguments = "x \"" + ClickedFile + "\" -o\"" + ExtractFolder + "\\\"";
+                //MessageBox.Show(startInfo.Arguments);
+            }
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
@@ -150,12 +166,17 @@ namespace vfilename
     {
         public int Compare(string s1, string s2)
         {
-            Match m1 = Regex.Match(s1, @"^.*\\(.*)-([^-]*)-(\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d)-(.*)\.rar$", RegexOptions.IgnoreCase);
-            Match m2 = Regex.Match(s2, @"^.*\\(.*)-([^-]*)-(\d\d\d\d\.\d\d.\d\d@\d\d.\d\d.\d\d)-(.*)\.rar$", RegexOptions.IgnoreCase);
+            Match m1 = Regex.Match(s1, RegexStrClass.RegexStr, RegexOptions.IgnoreCase);
+            Match m2 = Regex.Match(s2, RegexStrClass.RegexStr, RegexOptions.IgnoreCase);
             string t1 = m1.Groups[3].Value;
             string t2 = m2.Groups[3].Value;
-            //MessageBox.Show(t1+" ... "+t2);
+            //MessageBox.Show("SpecialCompare "+t1+" ... "+t2);
             return String.Compare(t1, t2);
         }
+    }
+
+    public static class RegexStrClass
+    {
+        public const string RegexStr = @"^.*\\([^\\]*)-([^-\\]*)-(\d\d\d\d\.\d\d\.\d\d@\d\d\.\d\d\.\d\d)-([^\\]*)\.(rar|7z)$";
     }
 }

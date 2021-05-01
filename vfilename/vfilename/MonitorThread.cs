@@ -24,16 +24,27 @@ namespace vfilename
             }));
             while (true)
             {
-                if((GetActiveWindowTitle()=="压缩文件名和参数")&&(GetForegroundWindow()!=HandledHwnd))
+                if( ((GetActiveWindowTitle()=="压缩文件名和参数")||(GetActiveWindowTitle()=="添加到压缩包"))
+                    &&(GetForegroundWindow()!=HandledHwnd))
                 {
-                    string RarExe = GetRarExe();
-                    ConfigTxt.Write("rarexe", RarExe, "");
-                    Thread.Sleep(1000);
+                    int RarOr7z = 0;
+                    if (GetActiveWindowTitle() == "压缩文件名和参数")
+                    {
+                        RarOr7z = 1;
+                        string RarExe = GetRarExe();
+                        ConfigTxt.Write("rarexe", RarExe, "");
+                    }
+                    if (GetActiveWindowTitle() == "添加到压缩包")
+                    {
+                        RarOr7z = 2;
+                        string SevenZipExe = Get7zExe();
+                        ConfigTxt.Write("7zexe", SevenZipExe, "");
+                    }
+
+                    Thread.Sleep(1100);
                     HandledHwnd = GetForegroundWindow();
                     Rect r = new Rect();
                     GetWindowRect(GetForegroundWindow(), ref r);
-                    int SpaceBetweenBorders = 15;
-                    MoveWindow(GetForegroundWindow(), r.Left, SpaceBetweenBorders, r.Right - r.Left, r.Bottom - r.Top, true);
                     App.Current.Dispatcher.Invoke((Action)(() =>
                     {
 
@@ -44,12 +55,24 @@ namespace vfilename
                         fnw.InitShow();
                         IntPtr fnwHwnd = (new WindowInteropHelper(fnw)).Handle;
 
-                        MoveWindow(fnwHwnd,
-                                   (r.Left + r.Right)/2 - ((r.Right - r.Left) * 3 / 2)/2, 
-                                   SpaceBetweenBorders + (r.Bottom - r.Top) + SpaceBetweenBorders,
-                                   (r.Right - r.Left) * 3 / 2,
-                                   (r.Bottom - r.Top) / 2,
-                                   true);
+                        if (RarOr7z == 1)
+                        {
+                            MoveWindow(fnwHwnd,
+                                       r.Left + (r.Right - r.Left) / 2 - (r.Right - r.Left) * 150 / (100 * 2),
+                                       r.Top + (r.Bottom - r.Top) / 2 - (r.Bottom - r.Top) * 46 / (100 * 2),
+                                       (r.Right - r.Left) * 150 / 100,
+                                       (r.Bottom - r.Top) * 46 / 100,
+                                       true);
+                        }
+                        else if(RarOr7z == 2)
+                        {
+                            MoveWindow(fnwHwnd,
+                                       r.Left,
+                                       r.Top + (r.Bottom - r.Top)/2 - (r.Bottom - r.Top) * 33 / (100 * 2),
+                                       (r.Right - r.Left),
+                                       (r.Bottom - r.Top) * 33 / 100,
+                                       true);
+                        }
 
                     }));
                 }
@@ -67,6 +90,16 @@ namespace vfilename
         public static string GetRarExe()
         {
             var process = Process.GetProcessesByName("wInRaR").First();
+            var fileNameBuilder = new StringBuilder(1024);
+            uint bufferLength = (uint)fileNameBuilder.Capacity + 1;
+            return QueryFullProcessImageName(process.Handle, 0, fileNameBuilder, ref bufferLength) ?
+                fileNameBuilder.ToString() :
+                null;
+        }
+
+        public static string Get7zExe()
+        {
+            var process = Process.GetProcessesByName("7Zg").First();
             var fileNameBuilder = new StringBuilder(1024);
             uint bufferLength = (uint)fileNameBuilder.Capacity + 1;
             return QueryFullProcessImageName(process.Handle, 0, fileNameBuilder, ref bufferLength) ?
